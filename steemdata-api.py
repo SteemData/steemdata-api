@@ -1,3 +1,5 @@
+import os
+
 from flask_api import FlaskAPI
 from flask_api.exceptions import ParseError, NotFound
 from flask_pymongo import PyMongo
@@ -22,7 +24,7 @@ def busy_account_following(account_name, following):
     `following` must be 'following' or 'followers'.\n
     """
     if following not in ['following', 'followers']:
-        raise ParseError(detail='following should be following or follower')
+        raise ParseError(detail='following should be following or following')
 
     acc = mongo.db['Accounts'].find_one({'name': account_name}, {following: 1, '_id': 0})
     if not acc:
@@ -37,4 +39,4 @@ def busy_account_following(account_name, following):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=not os.getenv('PRODUCTION', False))
