@@ -1,10 +1,10 @@
 import os
+from contextlib import suppress
 
 from flask_api import FlaskAPI
 from flask_api.exceptions import ParseError, NotFound
 from flask_pymongo import PyMongo
-from funcy import where, first
-from steemdata.helpers import timeit
+from funcy import repeat
 
 app = FlaskAPI(__name__)
 
@@ -44,11 +44,11 @@ def busy_account_following(account_name, following):
     accounts_w_meta = list(mongo.db['Accounts'].find({'name': {'$in': acc[following]}}, allowed_fields))
 
     # return in LIFO order (last to follow is listed first)
-    accounts_ordered = []
-    with timeit():
-        for a in acc[following]:
-            accounts_ordered.append(first(where(accounts_w_meta, name=a)))
-    return accounts_ordered[::-1]
+    accounts_ordered = list(repeat('', len(acc[following])))
+    for a in accounts_w_meta:
+        with suppress(ValueError):
+            accounts_ordered[acc[following].index(a.get('name', None))] = a
+    return [x for x in accounts_ordered if x][::-1]
 
 
 if __name__ == '__main__':
