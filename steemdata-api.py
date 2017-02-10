@@ -16,7 +16,7 @@ def hello_world():
     return {'success': True}
 
 
-@app.route('/busy/<string:account_name>/with_metadata/<string:following>')
+@app.route('/busy.org/<string:account_name>/with_metadata/<string:following>')
 def busy_account_following(account_name, following):
     """
     Fetch users followers or followings and their metadata.\n
