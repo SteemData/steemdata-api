@@ -7,15 +7,9 @@ services:
     volumes:
     - logvolume01:/var/log
     environment:
-      - IPFS_HOST=ipfs
+      - PRODUCTION=true
       - "FLASK_HOST=0.0.0.0"
       - UNLOCK=foo
-    links:
-      - ipfs
-    depends_on:
-      - ipfs
-  ipfs:
-    image: ipfs/go-ipfs
 volumes:
   logvolume01: {}
 

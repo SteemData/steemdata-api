@@ -39,4 +39,5 @@ def busy_account_following(account_name, following):
 
 
 if __name__ == '__main__':
-    app.run(debug=not os.getenv('PRODUCTION', False))
+    app.run(host=os.getenv('FLASK_HOST', '127.0.0.1'),
+            debug=not os.getenv('PRODUCTION', False))
