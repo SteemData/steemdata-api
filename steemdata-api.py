@@ -27,7 +27,7 @@ def busy_account_following(account_name, following):
     `following` must be 'following' or 'followers'.\n
     """
     if following not in ['following', 'followers']:
-        raise ParseError(detail='following should be following or following')
+        raise ParseError(detail='Please specify following or followers.')
 
     acc = mongo.db['Accounts'].find_one({'name': account_name}, {following: 1, '_id': 0})
     if not acc:
