@@ -1,4 +1,4 @@
-FROM python:3.5.2
+FROM python:3.5.3
 MAINTAINER furion <_@furion.me>
 
 COPY . /src
@@ -6,6 +6,9 @@ WORKDIR /src
 
 RUN pip install -r requirements.txt
 
+ENV PRODUCTION yes
+ENV FLASK_HOST 0.0.0.0
+
 EXPOSE 5000
 
-CMD ["python", "steemdata-api.py"]
+CMD ["python", "src/steemdata-api.py"]

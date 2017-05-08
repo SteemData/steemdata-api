@@ -1,29 +1,34 @@
 import os
 from contextlib import suppress
 
+from flask import render_template
 from flask_api import FlaskAPI
 from flask_api.exceptions import ParseError, NotFound
+from flask_cors import CORS
 from flask_pymongo import PyMongo
-from funcy import repeat
+from funcy.seqs import repeat
 
-app = FlaskAPI(__name__)
+app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
 app.config['MONGO_URI'] = 'mongodb://steemit:steemit@mongo1.steemdata.com:27017/SteemData'
 
 mongo = PyMongo(app)
+CORS(app)  # enable cors defaults (*)
 
 
 @app.route('/')
 def hello_world():
-    return {'success': True}
+    return render_template('index.html')
 
 
-@app.route('/busy.org/<string:account_name>/with_metadata/<string:following>')
+# busy.org
+# --------
+@app.route('/busy.org/<string:account_name>/<string:following>')
 def busy_account_following(account_name, following):
     """
     Fetch users followers or followings and their metadata.
     Returned list is ordered by follow time (newest followers first). \n
-    Usage: `GET /busy/<string:account_name>/with_metadata/<string:following>`\n
+    Usage: `GET /busy/<string:account_name>/<string:following>`\n
     `following` must be 'following' or 'followers'.\n
     """
     if following not in ['following', 'followers']:

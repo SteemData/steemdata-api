@@ -1,5 +1,7 @@
 flask
 Flask-API
 Flask-PyMongo
+flask-cors
 markdown
 funcy
+toolz
