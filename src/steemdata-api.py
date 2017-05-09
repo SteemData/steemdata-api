@@ -8,6 +8,8 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from funcy.seqs import repeat
 
+from methods import steemq_query
+
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
 app.config['MONGO_URI'] = 'mongodb://steemit:steemit@mongo1.steemdata.com:27017/SteemData'
@@ -19,6 +21,34 @@ CORS(app)  # enable cors defaults (*)
 @app.route('/')
 def hello_world():
     return render_template('index.html')
+
+
+# steemq.com
+# ----------
+@app.route('/steemq.com/blog/<string:account_name>')
+def steemq_get_blog(account_name):
+    conditions = {
+        'author': account_name,
+    }
+    return steemq_query(mongo, conditions=conditions)
+
+
+@app.route('/steemq.com/new')
+def steemq_feed_new():
+    results = steemq_query(mongo, sort_by='new')
+    return results
+
+
+@app.route('/steemq.com/trending')
+def steemq_feed_trending():
+    results = steemq_query(mongo, sort_by='payout')
+    return results
+
+
+@app.route('/steemq.com/search/<string:keywords>')
+def steemq_search(keywords):
+    results = steemq_query(mongo, search=keywords)
+    return results
 
 
 # busy.org
