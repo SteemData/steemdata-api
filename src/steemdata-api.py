@@ -23,6 +23,23 @@ def hello_world():
     return render_template('index.html')
 
 
+# steemdata.com
+# -------------
+@app.route('/steemdata.com/mentions/<string:account_name>')
+def steemdata_mentions(account_name):
+    return []
+
+
+@app.route('/steemdata.com/linkbacks/<string:identifier>')
+def steemdata_linkbacks(identifier):
+    return []
+
+
+@app.route('/steemdata.com/search/<string:keywords>')
+def steemdata_search(keywords):
+    return []
+
+
 # steemq.com
 # ----------
 @app.route('/steemq.com/blog/<string:account_name>')
@@ -48,6 +65,15 @@ def steemq_feed_trending():
 @app.route('/steemq.com/search/<string:keywords>')
 def steemq_search(keywords):
     results = steemq_query(mongo, search=keywords)
+    return results
+
+
+@app.route('/steemq.com/search/<string:account_name>/<string:keywords>')
+def steemq_author_search(account_name, keywords):
+    conditions = {
+        'author': account_name,
+    }
+    results = steemq_query(mongo, conditions=conditions, search=keywords)
     return results
 
 
