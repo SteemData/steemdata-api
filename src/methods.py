@@ -51,7 +51,7 @@ def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new', op
 def head_block(mongo: PyMongo):
     last_op = mongo.db['Operations'].find_one(
         filter={},
-        projection={'block_num': 1},
+        projection={'block_num': 1, '_id': 0},
         sort=[('block_num', pymongo.DESCENDING)],
     )
     return last_op['block_num']
