@@ -8,7 +8,7 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from funcy.seqs import repeat
 
-from methods import steemq_query, health_check
+from methods import steemq_query, health_check, collection_health
 
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
@@ -25,7 +25,14 @@ def hello_world():
 
 @app.route('/health')
 def health():
+    """ Show the difference between last synced block and head state. """
     return health_check(mongo)
+
+
+@app.route('/health/collections')
+def health_coll():
+    """ Show time passed in seconds, since latest created item for each collection. """
+    return collection_health(mongo)
 
 
 # steemdata.com
