@@ -46,3 +46,29 @@ def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new', op
         limit=options.get('limit'),
         skip=options.get('skip'),
     ))
+
+
+def head_block(mongo: PyMongo):
+    last_op = mongo.db['Operations'].find_one(
+        filter={},
+        projection={'block_num': 1},
+        sort=[('block_num', pymongo.DESCENDING)],
+    )
+    return last_op['block_num']
+
+
+def head_block_steem():
+    from steem import Steem
+    s = Steem()
+    return s.last_irreversible_block_num
+
+
+def health_check(mongo):
+    steemd_head = head_block_steem()
+    mongo_head = head_block(mongo)
+    diff = steemd_head - mongo_head
+    return {
+        'steemd_head': steemd_head,
+        'mongo_head': mongo_head,
+        'diff': diff,
+    }

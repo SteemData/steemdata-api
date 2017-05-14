@@ -8,7 +8,7 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from funcy.seqs import repeat
 
-from methods import steemq_query
+from methods import steemq_query, health_check
 
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
@@ -21,6 +21,11 @@ CORS(app)  # enable cors defaults (*)
 @app.route('/')
 def hello_world():
     return render_template('index.html')
+
+
+@app.route('/health')
+def health():
+    return health_check(mongo)
 
 
 # steemdata.com
