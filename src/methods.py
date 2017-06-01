@@ -28,11 +28,13 @@ def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new', op
             ('pending_payout_value.amount', pymongo.DESCENDING),
             ('total_payout_value.amount', pymongo.DESCENDING),
         ]
+    elif sort_by == 'votes':
+        sorting = [('net_votes', pymongo.DESCENDING)]
 
     if search:
         query['$text'] = {'$search': search}
         projection['score'] = {'$meta': 'textScore'}
-        sorting = [('score', {'$meta': 'textScore'})]
+        sorting.insert(0, ('score', {'$meta': 'textScore'}))
 
     options = options or {}
     default_options = {
