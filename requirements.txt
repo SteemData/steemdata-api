@@ -1,4 +1,3 @@
-steem
 flask
 Flask-API
 Flask-PyMongo

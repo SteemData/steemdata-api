@@ -3,10 +3,12 @@ from collections import ChainMap
 
 import pymongo
 from flask_pymongo import PyMongo
-from funcy.colls import walk_values
+from funcy import walk_values, all
+from steem import Steem
 
 
-def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new', options=None):
+def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new',
+                 options=None):
     """ Run a query against SteemQ Posts. """
     # apply conditions, such as time constraints
     conditions = conditions or {}
@@ -55,7 +57,6 @@ def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new', op
 # Health Checks
 # -------------
 def head_block():
-    from steem import Steem
     s = Steem()
     return s.last_irreversible_block_num
 
@@ -77,6 +78,7 @@ def health_check(mongo):
         'steemd_head': steemd_head,
         'mongo_head': mongo_head,
         'diff': diff,
+        'status': 'ok' if diff < 100 else 'impaired',
     }
 
 
@@ -92,4 +94,24 @@ def collection_health(mongo):
         delta = dt.datetime.utcnow().replace(tzinfo=None) - item_time.replace(tzinfo=None)
         return delta.seconds
 
-    return walk_values(time_delta, last_items)
+    timings = walk_values(time_delta, last_items)
+    return {
+        **timings,
+        'status': 'ok' if all(lambda x: x < 60 * 10, timings.values()) else 'impaired'
+    }
+
+
+def steemd_health(remote_hostname: str):
+    s = Steem()
+    local_steemd = s.last_irreversible_block_num
+
+    s.set_node(remote_hostname)
+    remote_steemd = s.last_irreversible_block_num
+    diff = remote_steemd - local_steemd
+
+    return dict(
+        remote_steemd=remote_steemd,
+        local_steemd=local_steemd,
+        diff=diff,
+        status='ok' if diff < 100 else 'impaired',
+    )

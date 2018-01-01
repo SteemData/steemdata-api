@@ -6,31 +6,43 @@ from flask_api import FlaskAPI
 from flask_api.exceptions import ParseError, NotFound
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-from funcy.seqs import repeat
+from funcy import repeat
 
-from methods import steemq_query, health_check, collection_health
+from methods import (
+    steemq_query,
+    health_check,
+    collection_health,
+    steemd_health,
+)
 
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
 app.config['MONGO_URI'] = 'mongodb://steemit:steemit@mongo1.steemdata.com:27017/SteemData'
+app.config['REMOTE_STEEMD'] = 'https://steemd.steemit.com'
 
 mongo = PyMongo(app)
 CORS(app)  # enable cors defaults (*)
 
 
 @app.route('/')
-def hello_world():
+def index():
     return render_template('index.html')
 
 
 @app.route('/health')
-def health():
+def main_health_check():
     """ Show the difference between last synced block and head state. """
     return health_check(mongo)
 
 
+@app.route('/health/steemd')
+def steemd_health_check():
+    """ Show the difference local and remote ndoe. """
+    return steemd_health(app.config['REMOTE_STEEMD'])
+
+
 @app.route('/health/collections')
-def health_coll():
+def collections_health_check():
     """ Show time passed in seconds, since latest created item for each collection. """
     return collection_health(mongo)
 
@@ -114,7 +126,8 @@ def busy_account_following(account_name, following):
         '_id': 0, 'name': 1, 'sp': 1, 'rep': 1,
         'followers_count': 1, 'following_count': 1, 'post_count': 1,
     }
-    accounts_w_meta = list(mongo.db['Accounts'].find({'name': {'$in': acc[following]}}, allowed_fields))
+    accounts_w_meta = list(
+        mongo.db['Accounts'].find({'name': {'$in': acc[following]}}, allowed_fields))
 
     # return in LIFO order (last to follow is listed first)
     accounts_ordered = list(repeat('', len(acc[following])))
