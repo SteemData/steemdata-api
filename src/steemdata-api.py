@@ -18,7 +18,7 @@ from methods import (
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
 app.config['MONGO_URI'] = 'mongodb://steemit:steemit@mongo1.steemdata.com:27017/SteemData'
-app.config['REMOTE_STEEMD'] = 'https://steemd.steemit.com'
+app.config['REMOTE_STEEMD'] = 'https://api.steemit.com'
 
 mongo = PyMongo(app)
 CORS(app)  # enable cors defaults (*)

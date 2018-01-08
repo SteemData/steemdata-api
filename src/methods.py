@@ -3,7 +3,7 @@ from collections import ChainMap
 
 import pymongo
 from flask_pymongo import PyMongo
-from funcy import walk_values, all
+from funcy import walk_values, any
 from steem import Steem
 
 
@@ -97,7 +97,7 @@ def collection_health(mongo):
     timings = walk_values(time_delta, last_items)
     return {
         **timings,
-        'status': 'ok' if all(lambda x: x < 60 * 10, timings.values()) else 'impaired'
+        'status': 'ok' if any(lambda x: x > 60 * 10, timings.values()) else 'impaired'
     }
 
 
