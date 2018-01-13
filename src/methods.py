@@ -72,11 +72,13 @@ def find_latest_item(mongo, collection_name, field_name):
 
 def health_check(mongo):
     steemd_head = head_block()
-    mongo_head = find_latest_item(mongo, 'Operations', 'block_num')
-    diff = steemd_head - mongo_head
+    indexer = mongo.db['_indexer'].find_one()
+    checkpoints = {k: v for k, v in indexer.items() if '_checkpoint' in k}
+    del checkpoints['accounts_checkpoint']
+    diff = steemd_head - min(checkpoints.values())
     return {
+        **checkpoints,
         'steemd_head': steemd_head,
-        'mongo_head': mongo_head,
         'diff': diff,
         'status': 'ok' if diff < 100 else 'impaired',
     }

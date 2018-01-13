@@ -31,13 +31,13 @@ def index():
 
 @app.route('/health')
 def main_health_check():
-    """ Show the difference between last synced block and head state. """
+    """ Show the maximum difference between indexers and steemd head. """
     return health_check(mongo)
 
 
 @app.route('/health/steemd')
 def steemd_health_check():
-    """ Show the difference local and remote ndoe. """
+    """ Show the difference local and remote node. """
     return steemd_health(app.config['REMOTE_STEEMD'])
 
 
