@@ -80,7 +80,7 @@ def health_check(mongo):
         **checkpoints,
         'steemd_head': steemd_head,
         'diff': diff,
-        'status': 'ok' if diff < 100 else 'impaired',
+        'status': 'impaired' if diff > 200 else 'ok',
     }
 
 
@@ -99,7 +99,7 @@ def collection_health(mongo):
     timings = walk_values(time_delta, last_items)
     return {
         **timings,
-        'status': 'ok' if any(lambda x: x > 60 * 10, timings.values()) else 'impaired'
+        'status': 'impaired' if any(lambda x: x > (60 * 10), timings.values()) else 'ok'
     }
 
 
