@@ -5,6 +5,7 @@ import pymongo
 from flask_pymongo import PyMongo
 from funcy import walk_values, any
 from steem import Steem
+from steem.utils import parse_time
 
 
 def steemq_query(mongo: PyMongo, conditions=None, search=None, sort_by='new',
@@ -103,17 +104,14 @@ def collection_health(mongo):
     }
 
 
-def steemd_health(remote_hostname: str):
+def steemd_health():
     s = Steem()
-    local_steemd = s.last_irreversible_block_num
-
-    s.set_node(remote_hostname)
-    remote_steemd = s.last_irreversible_block_num
-    diff = remote_steemd - local_steemd
+    head_block = s.get_block_header(s.head_block_number)
+    head_block_time = parse_time(head_block['timestamp'])
+    diff = (dt.datetime.utcnow() - head_block_time).seconds
 
     return dict(
-        remote_steemd=remote_steemd,
-        local_steemd=local_steemd,
+        steemd_head_time=str(head_block_time),
         diff=diff,
         status='ok' if diff < 100 else 'impaired',
     )

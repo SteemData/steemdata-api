@@ -5,7 +5,6 @@ COPY . /src
 WORKDIR /src
 
 RUN pip install git+git://github.com/Netherdrake/steem-python@master
-RUN steempy set nodes http://steemd.steemdata.com:8090
 RUN pip install -r requirements.txt
 
 ENV PRODUCTION yes

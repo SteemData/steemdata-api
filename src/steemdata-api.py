@@ -18,7 +18,6 @@ from methods import (
 app = FlaskAPI(__name__, template_folder='../templates', static_folder='../static')
 
 app.config['MONGO_URI'] = 'mongodb://steemit:steemit@mongo1.steemdata.com:27017/SteemData'
-app.config['REMOTE_STEEMD'] = 'https://api.steemit.com'
 
 mongo = PyMongo(app)
 CORS(app)  # enable cors defaults (*)
@@ -38,7 +37,7 @@ def main_health_check():
 @app.route('/health/steemd')
 def steemd_health_check():
     """ Show the difference local and remote node. """
-    return steemd_health(app.config['REMOTE_STEEMD'])
+    return steemd_health()
 
 
 @app.route('/health/collections')
